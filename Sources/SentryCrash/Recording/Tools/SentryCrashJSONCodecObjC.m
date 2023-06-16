@@ -260,10 +260,14 @@ onNullElement(const char *const cName, void *const userData)
 static int
 onStringElement(const char *const cName, const char *const value, void *const userData)
 {
-    NSString *name = stringFromCString(cName);
-    id element = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
-    SentryCrashJSONCodec *codec = (__bridge SentryCrashJSONCodec *)userData;
-    return onElement(codec, name, element);
+    @try {
+        NSString *name = stringFromCString(cName);
+        id element = [NSString stringWithCString:value encoding:NSUTF8StringEncoding];
+        SentryCrashJSONCodec *codec = (__bridge SentryCrashJSONCodec *)userData;
+        return onElement(codec, name, element);
+    } @catch (NSException *exception) {
+        return SentryCrashJSON_OK;
+    }
 }
 
 static int
